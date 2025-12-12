@@ -20,7 +20,7 @@ export function ContactPage() {
   }
 
   return (
-    <Layout>
+    // <Layout>
       <div className="container mx-auto px-4 py-16">
         <h1 className="text-3xl font-bold text-center mb-12">Liên hệ với chúng tôi</h1>
         
@@ -107,7 +107,7 @@ export function ContactPage() {
           </div>
         </div>
       </div>
-    </Layout>
+    // </Layout>
   )
 }
 

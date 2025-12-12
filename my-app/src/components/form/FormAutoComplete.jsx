@@ -56,41 +56,46 @@ export function FormAutoComplete({
   }, [open])
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 w-full">
       {label && (
         <Label htmlFor={name} className={cn(disabled && "opacity-50")}>
           {label}
         </Label>
       )}
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            disabled={disabled}
-            className={cn(
-              "w-full justify-between",
-              !selectedOption && "text-muted-foreground",
-              errorMessage && "border-destructive",
-              className
-            )}
-            {...props}
+      <div className="w-full">
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              disabled={disabled}
+              className={cn(
+                "w-full justify-between",
+                !selectedOption && "text-muted-foreground",
+                errorMessage && "border-destructive",
+                className
+              )}
+              {...props}
+            >
+              {selectedOption
+                ? getOptionLabel(selectedOption)
+                : placeholder}
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent 
+            className="w-[var(--radix-popover-trigger-width)] p-0" 
+            align="start"
+            sideOffset={4}
           >
-            {selectedOption
-              ? getOptionLabel(selectedOption)
-              : placeholder}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-full p-0" align="start">
           <div className="p-2">
             <Input
               ref={inputRef}
               placeholder="Search..."
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              className="mb-2"
+              className="mb-2 w-full"
             />
             <div className="max-h-[200px] overflow-auto">
               {filteredOptions.length === 0 ? (
@@ -128,8 +133,9 @@ export function FormAutoComplete({
               )}
             </div>
           </div>
-        </PopoverContent>
-      </Popover>
+          </PopoverContent>
+        </Popover>
+      </div>
       {errorMessage && (
         <p className="text-sm text-destructive">{errorMessage}</p>
       )}

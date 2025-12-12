@@ -9,13 +9,28 @@ import {
   FormAutoComplete,
   FormFileInput,
 } from "@/components/form"
-import { CheckCircle2, Copy, ArrowRight, ArrowLeft } from "lucide-react"
+import { CheckCircle2, Copy, ArrowRight, ArrowLeft, GraduationCap, Award, BookOpen } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const PROGRAM_TYPES = [
-  { value: "trung-cap", label: "Trung Cấp" },
-  { value: "cao-dang", label: "Cao Đẳng" },
-  { value: "khoa-hoc-ngan-han", label: "Khóa học ngắn hạn" },
+  { 
+    value: "trung-cap", 
+    label: "Trung Cấp",
+    description: "Chương trình đào tạo trung cấp chuyên nghiệp",
+    icon: GraduationCap
+  },
+  { 
+    value: "cao-dang", 
+    label: "Cao Đẳng",
+    description: "Chương trình đào tạo cao đẳng chuyên nghiệp",
+    icon: Award
+  },
+  { 
+    value: "khoa-hoc-ngan-han", 
+    label: "Khóa Học Ngắn Hạn",
+    description: "Các khóa đào tạo ngắn hạn, chứng chỉ nghề",
+    icon: BookOpen
+  },
 ]
 
 const MAJORS = {
@@ -43,9 +58,8 @@ const MAJORS = {
 export function AdmissionPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [profileUrl, setProfileUrl] = useState("")
-  const [otpVerified, setOtpVerified] = useState(false)
 
-  const { control, handleSubmit, watch, formState: { errors } } = useForm({
+  const { control, handleSubmit, watch, setValue, formState: { errors } } = useForm({
     defaultValues: {
       programType: "",
       major: "",
@@ -88,7 +102,6 @@ export function AdmissionPage() {
     } else if (currentStep === 5) {
       // Simulate OTP verification
       if (data.otp === "123456") {
-        setOtpVerified(true)
         const url = `https://university.edu.vn/profile/${Math.random().toString(36).substring(7)}`
         setProfileUrl(url)
         setCurrentStep(6)
@@ -150,21 +163,65 @@ export function AdmissionPage() {
         </div>
 
         {/* Form Content */}
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="bg-background rounded-lg shadow-lg p-8">
               {/* Step 1: Program Type */}
               {currentStep === 1 && (
-                <div className="space-y-6">
-                  <h2 className="text-2xl font-semibold mb-6">Chọn loại chương trình</h2>
-                  <FormSelect
-                    control={control}
-                    name="programType"
-                    label="Loại chương trình"
-                    options={PROGRAM_TYPES}
-                    placeholder="Chọn loại chương trình"
-                    rules={{ required: "Vui lòng chọn loại chương trình" }}
-                  />
+                <div className="space-y-8">
+                  <div className="text-center">
+                    <h2 className="text-3xl font-bold mb-2">Chọn Hệ Đào Tạo</h2>
+                    <p className="text-muted-foreground">Vui lòng chọn hệ đào tạo bạn muốn đăng ký</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {PROGRAM_TYPES.map((type) => {
+                      const Icon = type.icon
+                      const isSelected = programType === type.value
+                      return (
+                        <div
+                          key={type.value}
+                          onClick={() => {
+                            setValue("programType", type.value, { shouldValidate: true })
+                          }}
+                          className={cn(
+                            "relative cursor-pointer rounded-lg border-2 p-6 transition-all hover:shadow-md",
+                            isSelected
+                              ? "border-primary bg-primary/5"
+                              : "border-gray-200 bg-white hover:border-primary/50"
+                          )}
+                        >
+                          {isSelected && (
+                            <div className="absolute top-2 right-2">
+                              <CheckCircle2 className="h-6 w-6 text-primary" />
+                            </div>
+                          )}
+                          <div className="flex flex-col items-center text-center space-y-4">
+                            <div className={cn(
+                              "h-16 w-16 rounded-full flex items-center justify-center",
+                              isSelected ? "bg-primary/10" : "bg-gray-100"
+                            )}>
+                              <Icon className={cn(
+                                "h-8 w-8",
+                                isSelected ? "text-primary" : "text-gray-600"
+                              )} />
+                            </div>
+                            <div>
+                              <h3 className="text-lg font-semibold mb-2">{type.label}</h3>
+                              <p className="text-sm text-muted-foreground">{type.description}</p>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {errors.programType && (
+                    <p className="text-sm text-destructive text-center">
+                      {errors.programType.message}
+                    </p>
+                  )}
+
                   <div className="flex justify-end">
                     <Button
                       type="button"
