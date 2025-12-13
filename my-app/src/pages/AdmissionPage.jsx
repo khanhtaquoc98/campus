@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Layout } from "@/components/layout/Layout"
 import {
@@ -13,20 +14,20 @@ import { CheckCircle2, Copy, ArrowRight, ArrowLeft, GraduationCap, Award, BookOp
 import { cn } from "@/lib/utils"
 
 const PROGRAM_TYPES = [
-  { 
-    value: "trung-cap", 
+  {
+    value: "trung-cap",
     label: "Trung Cấp",
     description: "Chương trình đào tạo trung cấp chuyên nghiệp",
     icon: GraduationCap
   },
-  { 
-    value: "cao-dang", 
+  {
+    value: "cao-dang",
     label: "Cao Đẳng",
     description: "Chương trình đào tạo cao đẳng chuyên nghiệp",
     icon: Award
   },
-  { 
-    value: "khoa-hoc-ngan-han", 
+  {
+    value: "khoa-hoc-ngan-han",
     label: "Khóa Học Ngắn Hạn",
     description: "Các khóa đào tạo ngắn hạn, chứng chỉ nghề",
     icon: BookOpen
@@ -102,7 +103,16 @@ export function AdmissionPage() {
     } else if (currentStep === 5) {
       // Simulate OTP verification
       if (data.otp === "123456") {
-        const url = `https://university.edu.vn/profile/${Math.random().toString(36).substring(7)}`
+        const id = Math.random().toString(36).substring(7)
+        // Save to localStorage
+        const profileData = {
+          ...data,
+          submittedAt: new Date().toISOString(),
+          status: "pending"
+        }
+        localStorage.setItem(`applicant_${id}`, JSON.stringify(profileData))
+
+        const url = `${window.location.origin}/profile/${id}`
         setProfileUrl(url)
         setCurrentStep(6)
       } else {
@@ -173,7 +183,7 @@ export function AdmissionPage() {
                     <h2 className="text-3xl font-bold mb-2">Chọn Hệ Đào Tạo</h2>
                     <p className="text-muted-foreground">Vui lòng chọn hệ đào tạo bạn muốn đăng ký</p>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {PROGRAM_TYPES.map((type) => {
                       const Icon = type.icon
