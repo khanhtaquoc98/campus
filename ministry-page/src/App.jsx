@@ -2,9 +2,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
-import ApplicationList from './pages/ApplicationList';
-import ApplicationDetail from './pages/ApplicationDetail';
-import ApplicationForm from './pages/ApplicationForm';
+import ApplicationList from './pages/ql-ho-so/ApplicationList';
+import ApplicationDetail from './pages/ql-ho-so/ApplicationDetail';
+import ApplicationForm from './pages/ql-ho-so/ApplicationForm';
 import './App.css';
 
 function App() {

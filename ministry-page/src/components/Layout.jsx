@@ -1,43 +1,31 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import './Layout.css';
+import { useState } from "react"
+import { Header } from "./Header"
+import { Sidebar } from "./Sidebar"
 
-const Layout = ({ children }) => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+export default function Layout({ children, showSidebar = true }) {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed)
+  }
 
   return (
-    <div className="layout">
-      <header className="header">
-        <div className="header-content">
-          <div className="logo">
-            <h1>Hệ Thống Quản Lý Giáo Vụ</h1>
-          </div>
-          <nav className="nav">
-            <Link to="/applications" className="nav-link">Danh sách hồ sơ</Link>
-            <div className="user-info">
-              <span>Xin chào, {user?.name || user?.username}</span>
-              <button onClick={handleLogout} className="btn-logout">
-                Đăng xuất
-              </button>
-            </div>
-          </nav>
-        </div>
-      </header>
-      <main className="main-content">
-        {children}
-      </main>
-      <footer className="footer">
-        <p>&copy; 2024 Hệ Thống Quản Lý Giáo Vụ - Trường Trung Cấp/Cao Đẳng</p>
-      </footer>
+    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
+      <Header onToggleSidebar={toggleSidebar} />
+      <div className="flex pt-16">
+        {showSidebar && (
+          <Sidebar 
+            collapsed={sidebarCollapsed}
+          />
+        )}
+        <main 
+          className={`flex-1 p-6 animate-fadeIn bg-gray-50 transition-all duration-300 max-w-full overflow-x-hidden ${
+            showSidebar && !sidebarCollapsed ? 'ml-64' : showSidebar && sidebarCollapsed ? 'ml-20' : 'ml-0'
+          }`}
+        >
+          {children}
+        </main>
+      </div>
     </div>
-  );
-};
-
-export default Layout;
-
+  )
+}

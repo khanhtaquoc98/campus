@@ -6,13 +6,11 @@ const ProtectedRoute = ({ children }) => {
 
   if (loading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh' 
-      }}>
-        <div>Đang tải...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+          <div className="text-gray-700 font-medium">Đang tải...</div>
+        </div>
       </div>
     );
   }
@@ -25,4 +23,3 @@ const ProtectedRoute = ({ children }) => {
 };
 
 export default ProtectedRoute;
-
