@@ -5,6 +5,8 @@ import { LoginPage } from "@/pages/LoginPage"
 import { AdmissionPage } from "@/pages/AdmissionPage"
 import { ContactPage } from "@/pages/ContactPage"
 import { AboutPage } from "@/pages/AboutPage"
+import { ApplicantProfilePage } from "@/pages/ApplicantProfilePage"
+import { CheckStatusPage } from "@/pages/CheckStatusPage"
 
 function App() {
   return (
@@ -36,6 +38,8 @@ function App() {
             </Layout>
           }
         />
+        <Route path="/profile/:id" element={<ApplicantProfilePage />} />
+        <Route path="/check-status" element={<CheckStatusPage />} />
       </Routes>
     </BrowserRouter>
   )
