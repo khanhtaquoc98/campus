@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import ApplicationList from './pages/ql-ho-so/ApplicationList';
 import ApplicationDetail from './pages/ql-ho-so/ApplicationDetail';
 import ApplicationForm from './pages/ql-ho-so/ApplicationForm';
+import ProgramManagement from './pages/ql-dao-tao/ProgramManagement';
 import './App.css';
 
 function App() {
@@ -46,6 +47,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <ApplicationForm />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/programs"
+            element={
+              <ProtectedRoute>
+                <ProgramManagement />
               </ProtectedRoute>
             }
           />

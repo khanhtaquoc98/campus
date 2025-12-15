@@ -2,13 +2,13 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { applicationAPI } from '../../services/api';
 import Layout from '../../components/Layout';
-import { 
-  Edit, 
-  CheckCircle2, 
+import {
+  Edit,
+  CheckCircle2,
   XCircle,
-  Phone, 
-  Mail, 
-  FileText, 
+  Phone,
+  Mail,
+  FileText,
   Download,
   X
 } from 'lucide-react';
@@ -27,7 +27,7 @@ const ApplicationDetail = () => {
       setLoading(true);
       const response = await applicationAPI.getById(id);
       const data = response.data;
-      
+
       // Check if data exists
       if (!data) {
         alert('Không tìm thấy thông tin hồ sơ. Đang sử dụng dữ liệu demo.');
@@ -65,10 +65,11 @@ const ApplicationDetail = () => {
           notes: 'Học sinh có thành tích tốt',
           admissionNo: `AD${String(id).padStart(7, '0')}`,
           rollNo: `R${String(id).padStart(3, '0')}`,
+          feeStatus: 'unpaid',
         });
         return;
       }
-      
+
       setApplication(data);
     } catch (err) {
       console.error('Error fetching application:', err);
@@ -107,6 +108,7 @@ const ApplicationDetail = () => {
         notes: 'Học sinh có thành tích tốt',
         admissionNo: `AD${String(id).padStart(7, '0')}`,
         rollNo: `R${String(id).padStart(3, '0')}`,
+        feeStatus: 'unpaid',
       });
     } finally {
       setLoading(false);
@@ -249,208 +251,232 @@ const ApplicationDetail = () => {
 
         {/* Main Content - Two Columns */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Column */}
-            <div className="lg:col-span-1 space-y-6">
-              {/* Student Profile Card */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6 text-center">
-                {/* Status Badge */}
-                <div className="mb-4">
-                  {application.status === 'pending' && (
-                    <div className="inline-flex items-center space-x-2 px-4 py-2 bg-yellow-50 border-2 border-yellow-400 rounded-lg">
-                      <span className="h-2.5 w-2.5 rounded-full bg-yellow-500 animate-pulse"></span>
-                      <span className="text-sm font-semibold text-yellow-700">Chờ Duyệt</span>
-                    </div>
-                  )}
-                  {application.status === 'approved' && (
-                    <div className="inline-flex items-center space-x-2 px-4 py-2 bg-green-50 border-2 border-green-500 rounded-lg">
-                      <span className="h-2.5 w-2.5 rounded-full bg-green-500"></span>
-                      <span className="text-sm font-semibold text-green-700">Đã Duyệt</span>
-                    </div>
-                  )}
-                  {application.status === 'rejected' && (
-                    <div className="inline-flex items-center space-x-2 px-4 py-2 bg-red-50 border-2 border-red-500 rounded-lg">
-                      <span className="h-2.5 w-2.5 rounded-full bg-red-500"></span>
-                      <span className="text-sm font-semibold text-red-700">Từ Chối</span>
-                    </div>
-                  )}
-                </div>
-                
-                <h2 className="text-xl font-bold text-gray-900 mb-1">{application.fullName}</h2>
-                <p className="text-sm text-gray-600 mb-6">{application.admissionNo || `AD${String(id).padStart(7, '0')}`}</p>
-
-                {/* Nguyện Vọng */}
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Nguyện Vọng</h3>
-                  {application.program === 'cao-dang' && (
-                    <div className="space-y-2">
-                      <div className="px-3 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg text-white text-sm font-semibold">
-                        Cao Đẳng
-                      </div>
-                      {application.major && (
-                        <div className="px-3 py-2 bg-indigo-50 border border-indigo-200 rounded-lg">
-                          <span className="text-xs text-indigo-600">Ngành học:</span>
-                          <p className="text-sm font-semibold text-indigo-900">{application.major}</p>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  {application.program === 'trung-cap' && (
-                    <div className="space-y-2">
-                      <div className="px-3 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-lg text-white text-sm font-semibold">
-                        Trung Cấp
-                      </div>
-                      {application.major && (
-                        <div className="px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
-                          <span className="text-xs text-blue-600">Ngành học:</span>
-                          <p className="text-sm font-semibold text-blue-900">{application.major}</p>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  {application.program === 'khoa-hoc-ngan-han' && (
-                    <div className="space-y-2">
-                      <div className="px-3 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg text-white text-sm font-semibold">
-                        Khóa Học Ngắn Hạn
-                      </div>
-                      {application.course && (
-                        <div className="px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-lg">
-                          <span className="text-xs text-emerald-600">Khóa học:</span>
-                          <p className="text-sm font-semibold text-emerald-900">{application.course}</p>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  {!application.program && (
-                    <div className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg">
-                      <span className="text-xs text-gray-600">Chưa chọn nguyện vọng</span>
-                    </div>
-                  )}
-                </div>
+          {/* Left Column */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Student Profile Card */}
+            <div className="bg-white rounded-lg border border-gray-200 p-6 text-center">
+              {/* Status Badge */}
+              <div className="mb-4">
+                {application.status === 'pending' && (
+                  <div className="inline-flex items-center space-x-2 px-4 py-2 bg-yellow-50 border-2 border-yellow-400 rounded-lg">
+                    <span className="h-2.5 w-2.5 rounded-full bg-yellow-500 animate-pulse"></span>
+                    <span className="text-sm font-semibold text-yellow-700">Chờ Duyệt</span>
+                  </div>
+                )}
+                {application.status === 'approved' && (
+                  <div className="inline-flex items-center space-x-2 px-4 py-2 bg-green-50 border-2 border-green-500 rounded-lg">
+                    <span className="h-2.5 w-2.5 rounded-full bg-green-500"></span>
+                    <span className="text-sm font-semibold text-green-700">Đã Duyệt</span>
+                  </div>
+                )}
+                {application.status === 'rejected' && (
+                  <div className="inline-flex items-center space-x-2 px-4 py-2 bg-red-50 border-2 border-red-500 rounded-lg">
+                    <span className="h-2.5 w-2.5 rounded-full bg-red-500"></span>
+                    <span className="text-sm font-semibold text-red-700">Từ Chối</span>
+                  </div>
+                )}
               </div>
 
-              {/* Basic Information */}
-              
-              {/* Primary Contact Info */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Thông Tin Liên Hệ Chính</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <Phone className="h-5 w-5 text-gray-400" />
-                    <div>
-                      <span className="text-sm text-gray-600">Số Điện Thoại:</span>
-                      <p className="text-sm font-medium text-gray-900">{application.phone}</p>
+              <h2 className="text-xl font-bold text-gray-900 mb-1">{application.fullName}</h2>
+              <p className="text-sm text-gray-600 mb-6">{application.admissionNo || `AD${String(id).padStart(7, '0')}`}</p>
+
+              {/* Nguyện Vọng */}
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Nguyện Vọng</h3>
+                {application.program === 'cao-dang' && (
+                  <div className="space-y-2">
+                    <div className="px-3 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg text-white text-sm font-semibold">
+                      Cao Đẳng
                     </div>
+                    {application.major && (
+                      <div className="px-3 py-2 bg-indigo-50 border border-indigo-200 rounded-lg">
+                        <span className="text-xs text-indigo-600">Ngành học:</span>
+                        <p className="text-sm font-semibold text-indigo-900">{application.major}</p>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <Mail className="h-5 w-5 text-gray-400" />
-                    <div>
-                      <span className="text-sm text-gray-600">Địa Chỉ Email:</span>
-                      <p className="text-sm font-medium text-gray-900">{application.email}</p>
+                )}
+                {application.program === 'trung-cap' && (
+                  <div className="space-y-2">
+                    <div className="px-3 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-lg text-white text-sm font-semibold">
+                      Trung Cấp
                     </div>
+                    {application.major && (
+                      <div className="px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
+                        <span className="text-xs text-blue-600">Ngành học:</span>
+                        <p className="text-sm font-semibold text-blue-900">{application.major}</p>
+                      </div>
+                    )}
                   </div>
-                </div>
+                )}
+                {application.program === 'khoa-hoc-ngan-han' && (
+                  <div className="space-y-2">
+                    <div className="px-3 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg text-white text-sm font-semibold">
+                      Khóa Học Ngắn Hạn
+                    </div>
+                    {application.course && (
+                      <div className="px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-lg">
+                        <span className="text-xs text-emerald-600">Khóa học:</span>
+                        <p className="text-sm font-semibold text-emerald-900">{application.course}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {!application.program && (
+                  <div className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg">
+                    <span className="text-xs text-gray-600">Chưa chọn nguyện vọng</span>
+                  </div>
+                )}
               </div>
 
-              
+              {/* Thông tin lệ phí */}
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Thông tin lệ phí</h3>
+                {(() => {
+                  // Logic xác định trạng thái lệ phí
+                  let status = { label: 'Chưa nộp', style: 'bg-red-50 text-red-700 border-red-200', icon: XCircle };
+
+                  if (['trung-cap', 'khoa-hoc-ngan-han'].includes(application.program)) {
+                    status = { label: 'Miễn lệ phí', style: 'bg-blue-50 text-blue-700 border-blue-200', icon: CheckCircle2 };
+                  } else if (application.feeStatus === 'paid') {
+                    status = { label: 'Đã nộp', style: 'bg-green-50 text-green-700 border-green-200', icon: CheckCircle2 };
+                  }
+
+                  const Icon = status.icon;
+
+                  return (
+                    <div className={`flex items-center justify-between px-3 py-2 border rounded-lg ${status.style}`}>
+                      <span className="text-sm font-medium">{status.label}</span>
+                      <Icon className="h-4 w-4" />
+                    </div>
+                  );
+                })()}
+              </div>
             </div>
 
-            {/* Right Column */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Application Information */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">Thông Tin Hồ Sơ</h3>
-                 
+            {/* Basic Information */}
+
+            {/* Primary Contact Info */}
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Thông Tin Liên Hệ Chính</h3>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3">
+                  <Phone className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <span className="text-sm text-gray-600">Số Điện Thoại:</span>
+                    <p className="text-sm font-medium text-gray-900">{application.phone}</p>
+                  </div>
                 </div>
-                <div className="mt-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600 whitespace-nowrap">Họ và tên:</span>
-                      <p className="text-sm font-medium text-gray-900">{application.fullName || 'N/A'}</p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600 whitespace-nowrap">Giới tính:</span>
-                      <p className="text-sm font-medium text-gray-900">
-                        {application.gender === 'male' ? 'Nam' : application.gender === 'female' ? 'Nữ' : 'Khác'}
-                      </p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600 whitespace-nowrap">Ngày sinh:</span>
-                      <p className="text-sm font-medium text-gray-900">
-                        {application.dateOfBirth ? new Date(application.dateOfBirth).toLocaleDateString('vi-VN') : 'N/A'}
-                      </p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600 whitespace-nowrap">Nơi sinh:</span>
-                      <p className="text-sm font-medium text-gray-900">{application.placeOfBirth || 'N/A'}</p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600 whitespace-nowrap">Nguyên Quán:</span>
-                      <p className="text-sm font-medium text-gray-900">{application.hometown || 'N/A'}</p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600 whitespace-nowrap">CMND/CCCD:</span>
-                      <p className="text-sm font-medium text-gray-900">{application.idCard || 'N/A'}</p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600 whitespace-nowrap">Hộ khẩu thường trú:</span>
-                      <p className="text-sm font-medium text-gray-900">{application.permanentAddress || 'N/A'}</p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600 whitespace-nowrap">Địa chỉ liên hệ:</span>
-                      <p className="text-sm font-medium text-gray-900">{application.contactAddress || application.permanentAddress || 'N/A'}</p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600 whitespace-nowrap">Dân tộc:</span>
-                      <p className="text-sm font-medium text-gray-900">{application.ethnicity || 'N/A'}</p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600 whitespace-nowrap">Nghề nghiệp:</span>
-                      <p className="text-sm font-medium text-gray-900">{application.occupation || 'N/A'}</p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600 whitespace-nowrap">Đơn vị công tác:</span>
-                      <p className="text-sm font-medium text-gray-900">{application.workplace || 'N/A'}</p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600 whitespace-nowrap">Chức vụ:</span>
-                      <p className="text-sm font-medium text-gray-900">{application.position || 'N/A'}</p>
-                    </div>
+                <div className="flex items-center space-x-3">
+                  <Mail className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <span className="text-sm text-gray-600">Địa Chỉ Email:</span>
+                    <p className="text-sm font-medium text-gray-900">{application.email}</p>
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Documents */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Bổ sung hồ sơ</h3>
+
+          </div>
+
+          {/* Right Column */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Application Information */}
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">Thông Tin Hồ Sơ</h3>
+
+              </div>
+              <div className="mt-4">
                 <div className="space-y-3">
-                  {[
-                    { label: 'Giấy Khai Sinh', file: application.birthCertificate },
-                    { label: 'Giấy Chuyển Trường', file: application.transcript },
-                    { label: 'CMND/CCCD', file: application.idCardFile },
-                    { label: 'Bằng Tốt Nghiệp', file: application.diploma },
-                  ].filter(doc => doc.file).map((doc, index) => (
-                    <div 
-                      key={index} 
-                      onClick={() => handleViewFile(doc.file, doc.label)}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <FileText className="h-5 w-5 text-red-500" />
-                        <span className="text-sm font-medium text-gray-900">{doc.file}</span>
-                      </div>
-                      <button 
-                        onClick={(e) => handleDownload(e, doc.file)}
-                        className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
-                      >
-                        <Download className="h-4 w-4 text-gray-600" />
-                      </button>
-                    </div>
-                  ))}
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600 whitespace-nowrap">Họ và tên:</span>
+                    <p className="text-sm font-medium text-gray-900">{application.fullName || 'N/A'}</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600 whitespace-nowrap">Giới tính:</span>
+                    <p className="text-sm font-medium text-gray-900">
+                      {application.gender === 'male' ? 'Nam' : application.gender === 'female' ? 'Nữ' : 'Khác'}
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600 whitespace-nowrap">Ngày sinh:</span>
+                    <p className="text-sm font-medium text-gray-900">
+                      {application.dateOfBirth ? new Date(application.dateOfBirth).toLocaleDateString('vi-VN') : 'N/A'}
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600 whitespace-nowrap">Nơi sinh:</span>
+                    <p className="text-sm font-medium text-gray-900">{application.placeOfBirth || 'N/A'}</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600 whitespace-nowrap">Nguyên Quán:</span>
+                    <p className="text-sm font-medium text-gray-900">{application.hometown || 'N/A'}</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600 whitespace-nowrap">CMND/CCCD:</span>
+                    <p className="text-sm font-medium text-gray-900">{application.idCard || 'N/A'}</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600 whitespace-nowrap">Hộ khẩu thường trú:</span>
+                    <p className="text-sm font-medium text-gray-900">{application.permanentAddress || 'N/A'}</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600 whitespace-nowrap">Địa chỉ liên hệ:</span>
+                    <p className="text-sm font-medium text-gray-900">{application.contactAddress || application.permanentAddress || 'N/A'}</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600 whitespace-nowrap">Dân tộc:</span>
+                    <p className="text-sm font-medium text-gray-900">{application.ethnicity || 'N/A'}</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600 whitespace-nowrap">Nghề nghiệp:</span>
+                    <p className="text-sm font-medium text-gray-900">{application.occupation || 'N/A'}</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600 whitespace-nowrap">Đơn vị công tác:</span>
+                    <p className="text-sm font-medium text-gray-900">{application.workplace || 'N/A'}</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600 whitespace-nowrap">Chức vụ:</span>
+                    <p className="text-sm font-medium text-gray-900">{application.position || 'N/A'}</p>
+                  </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Documents */}
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Bổ sung hồ sơ</h3>
+              <div className="space-y-3">
+                {[
+                  { label: 'Giấy Khai Sinh', file: application.birthCertificate },
+                  { label: 'Giấy Chuyển Trường', file: application.transcript },
+                  { label: 'CMND/CCCD', file: application.idCardFile },
+                  { label: 'Bằng Tốt Nghiệp', file: application.diploma },
+                ].filter(doc => doc.file).map((doc, index) => (
+                  <div
+                    key={index}
+                    onClick={() => handleViewFile(doc.file, doc.label)}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <FileText className="h-5 w-5 text-red-500" />
+                      <span className="text-sm font-medium text-gray-900">{doc.file}</span>
+                    </div>
+                    <button
+                      onClick={(e) => handleDownload(e, doc.file)}
+                      className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
+                    >
+                      <Download className="h-4 w-4 text-gray-600" />
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
+        </div>
       </div>
 
       {/* Modal for viewing PDF and Images */}

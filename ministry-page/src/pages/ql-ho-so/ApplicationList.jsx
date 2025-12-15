@@ -2,10 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { applicationAPI } from '../../services/api';
 import Layout from '../../components/Layout';
-import { 
-  Plus, 
-  Search, 
-  Filter, 
+import {
+  Plus,
+  Search,
+  Filter,
   Download,
   ChevronDown,
   List,
@@ -29,13 +29,14 @@ const ApplicationList = () => {
     const programs = ['cao-dang', 'trung-cap', 'khoa-hoc-ngan-han'];
     const majors = ['Công nghệ thông tin', 'Kế toán', 'Quản trị kinh doanh', 'Điện tử viễn thông'];
     const courses = ['Khóa học ngắn hạn 1', 'Khóa học ngắn hạn 2', 'Khóa học ngắn hạn 3'];
+    const feeStatuses = ['paid', 'unpaid'];
     const statuses = ['pending', 'approved', 'rejected'];
 
     return Array.from({ length: 25 }, (_, i) => {
       const program = programs[i % programs.length];
       const submittedDate = new Date(2024, 0, i + 1);
-      const reviewedDate = statuses[i % statuses.length] !== 'pending' 
-        ? new Date(2024, 0, i + 2) 
+      const reviewedDate = statuses[i % statuses.length] !== 'pending'
+        ? new Date(2024, 0, i + 2)
         : null;
 
       return {
@@ -48,6 +49,7 @@ const ApplicationList = () => {
         submittedAt: submittedDate.toISOString(),
         reviewedAt: reviewedDate ? reviewedDate.toISOString() : null,
         status: statuses[i % statuses.length],
+        feeStatus: feeStatuses[i % feeStatuses.length], // Add feeStatus
       };
     });
   }, []);
@@ -71,9 +73,9 @@ const ApplicationList = () => {
 
   const filteredApplications = applications.filter(app => {
     const matchesSearch = app.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         app.admissionNo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         app.major?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         app.course?.toLowerCase().includes(searchTerm.toLowerCase());
+      app.admissionNo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.major?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.course?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
 
@@ -85,8 +87,8 @@ const ApplicationList = () => {
     try {
       await applicationAPI.updateStatus(id, 'approved');
       // Update local state
-      setApplications(prev => prev.map(app => 
-        app.id === id 
+      setApplications(prev => prev.map(app =>
+        app.id === id
           ? { ...app, status: 'approved', reviewedAt: new Date().toISOString() }
           : app
       ));
@@ -121,6 +123,19 @@ const ApplicationList = () => {
       default:
         return 'N/A';
     }
+  };
+
+  const getFeeStatusLabel = (app) => {
+    // khoa-hoc-ngan-han and trung-cap are not required applicant fee
+    if (['trung-cap', 'khoa-hoc-ngan-han'].includes(app.program)) {
+      return { label: 'Miễn lệ phí', style: 'bg-blue-100 text-blue-800' };
+    }
+
+    // Check fee status for others (e.g. cao-dang)
+    if (app.feeStatus === 'paid') {
+      return { label: 'Đã nộp', style: 'bg-green-100 text-green-800' };
+    }
+    return { label: 'Chưa nộp', style: 'bg-red-100 text-red-800' };
   };
 
   const toggleDropdown = (id) => {
@@ -199,7 +214,7 @@ const ApplicationList = () => {
               <span className="text-gray-400">-</span>
               <span className="text-sm text-gray-600">12/13/2025</span>
             </div>
-            
+
             <button className="flex items-center space-x-2 px-3 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
               <Filter className="h-4 w-4 text-gray-600" />
               <span className="text-sm text-gray-700">Filter</span>
@@ -303,6 +318,14 @@ const ApplicationList = () => {
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     <div className="flex items-center space-x-1">
+                      <span>Thông tin lệ phí</span>
+                      <div className="flex flex-col">
+                        <ChevronDown className="h-3 w-3 text-gray-400" />
+                      </div>
+                    </div>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <div className="flex items-center space-x-1">
                       <span>Ngày Nộp</span>
                       <div className="flex flex-col">
                         <ChevronDown className="h-3 w-3 text-gray-400" />
@@ -344,37 +367,47 @@ const ApplicationList = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-3">
-                       
+
                         <span className="text-sm font-medium text-gray-900">{app.fullName || 'N/A'}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium ${
                         app.program === 'cao-dang'
-                          ? 'bg-indigo-100 text-indigo-700'
-                          : app.program === 'trung-cap'
+                        ? 'bg-indigo-100 text-indigo-700'
+                        : app.program === 'trung-cap'
                           ? 'bg-blue-100 text-blue-700'
                           : app.program === 'khoa-hoc-ngan-han'
-                          ? 'bg-emerald-100 text-emerald-700'
-                          : 'bg-gray-100 text-gray-700'
-                      }`}>
+                            ? 'bg-emerald-100 text-emerald-700'
+                            : 'bg-gray-100 text-gray-700'
+                        }`}>
                         {getProgramLabel(app.program)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {app.program === 'khoa-hoc-ngan-han' 
+                      {app.program === 'khoa-hoc-ngan-han'
                         ? (app.course || 'N/A')
                         : (app.major || 'N/A')
                       }
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {(() => {
+                        const { label, style } = getFeeStatusLabel(app);
+                        return (
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium ${style}`}>
+                            {label}
+                          </span>
+                        );
+                      })()}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {app.submittedAt 
+                      {app.submittedAt
                         ? new Date(app.submittedAt).toLocaleDateString('vi-VN')
                         : 'N/A'
                       }
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {app.reviewedAt 
+                      {app.reviewedAt
                         ? new Date(app.reviewedAt).toLocaleDateString('vi-VN')
                         : '-'
                       }
@@ -384,16 +417,16 @@ const ApplicationList = () => {
                         app.status === 'approved'
                           ? 'bg-green-100 text-green-800'
                           : app.status === 'rejected'
-                          ? 'bg-red-100 text-red-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}>
                         <span className={`h-1.5 w-1.5 rounded-full mr-1.5 ${
                           app.status === 'approved'
                             ? 'bg-green-500'
                             : app.status === 'rejected'
-                            ? 'bg-red-500'
-                            : 'bg-yellow-500'
-                        }`}></span>
+                              ? 'bg-red-500'
+                              : 'bg-yellow-500'
+                          }`}></span>
                         {getStatusLabel(app.status)}
                       </span>
                     </td>
@@ -406,7 +439,7 @@ const ApplicationList = () => {
                         >
                           <MoreVertical className="h-4 w-4 text-gray-600" />
                         </button>
-                        
+
                         {openDropdownId === app.id && (
                           <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                             <div className="py-1">
