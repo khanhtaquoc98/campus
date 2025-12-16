@@ -39,6 +39,12 @@ const MAJORS_MAPPING = {
     "kh-4": "Digital Marketing",
 }
 
+const GENDER_LABEL = {
+    "nam": "Nam",
+    "nu": "Nữ",
+    "khac": "Khác"
+}
+
 export function ApplicantProfilePage() {
     const { id } = useParams()
     const [profile, setProfile] = useState(null)
@@ -131,6 +137,27 @@ export function ApplicantProfilePage() {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
+                                            <label className="text-sm text-muted-foreground">Ngày sinh</label>
+                                            <div className="flex items-center">
+                                                <Calendar className="w-4 h-4 mr-2 text-muted-foreground" />
+                                                <p className="font-medium">
+                                                    {profile.dob ? new Date(profile.dob).toLocaleDateString('vi-VN') : "N/A"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="text-sm text-muted-foreground">Giới tính</label>
+                                            <p className="font-medium">{GENDER_LABEL[profile.gender] || profile.gender}</p>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-sm text-muted-foreground">Dân tộc</label>
+                                            <p className="font-medium">{profile.ethnicity}</p>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
                                             <label className="text-sm text-muted-foreground">Số điện thoại</label>
                                             <div className="flex items-center">
                                                 <Phone className="w-4 h-4 mr-2 text-muted-foreground" />
@@ -146,10 +173,17 @@ export function ApplicantProfilePage() {
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="text-sm text-muted-foreground">Địa chỉ</label>
+                                        <label className="text-sm text-muted-foreground">Địa chỉ thường trú</label>
                                         <div className="flex items-center">
                                             <MapPin className="w-4 h-4 mr-2 text-muted-foreground" />
                                             <p className="font-medium">{profile.address}</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-sm text-muted-foreground">Địa chỉ liên hệ</label>
+                                        <div className="flex items-center">
+                                            <MapPin className="w-4 h-4 mr-2 text-muted-foreground" />
+                                            <p className="font-medium">{profile.contactAddress}</p>
                                         </div>
                                     </div>
                                 </div>

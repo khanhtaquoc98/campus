@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { format } from "date-fns"
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Layout } from "@/components/layout/Layout"
@@ -9,6 +10,7 @@ import {
   FormSelect,
   FormAutoComplete,
   FormFileInput,
+  FormDate,
 } from "@/components/form"
 import { CheckCircle2, Copy, ArrowRight, ArrowLeft, GraduationCap, Award, BookOpen } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -56,6 +58,12 @@ const MAJORS = {
   ],
 }
 
+const GENDER_OPTIONS = [
+  { value: "nam", label: "Nam" },
+  { value: "nu", label: "Nữ" },
+  { value: "khac", label: "Khác" },
+]
+
 export function AdmissionPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [profileUrl, setProfileUrl] = useState("")
@@ -72,6 +80,10 @@ export function AdmissionPage() {
       highSchoolTranscript: "",
       graduationCertificate: "",
       otp: "",
+      gender: "",
+      dob: null,
+      ethnicity: "",
+      contactAddress: "",
     },
   })
 
@@ -316,13 +328,42 @@ export function AdmissionPage() {
                         },
                       }}
                     />
+                    <FormDate
+                      control={control}
+                      name="dob"
+                      label="Ngày sinh"
+                      placeholder="Chọn ngày sinh"
+                      dateFormat="dd/MM/yyyy"
+                      rules={{ required: "Vui lòng chọn ngày sinh" }}
+                    />
+                    <FormSelect
+                      control={control}
+                      name="gender"
+                      label="Giới tính"
+                      options={GENDER_OPTIONS}
+                      rules={{ required: "Vui lòng chọn giới tính" }}
+                    />
+                    <FormInput
+                      control={control}
+                      name="ethnicity"
+                      label="Dân tộc"
+                      placeholder="Nhập dân tộc"
+                      rules={{ required: "Vui lòng nhập dân tộc" }}
+                    />
                   </div>
                   <FormInput
                     control={control}
                     name="address"
-                    label="Địa chỉ"
-                    placeholder="Nhập địa chỉ"
-                    rules={{ required: "Vui lòng nhập địa chỉ" }}
+                    label="Địa chỉ thường trú"
+                    placeholder="Nhập địa chỉ thường trú"
+                    rules={{ required: "Vui lòng nhập địa chỉ thường trú" }}
+                  />
+                  <FormInput
+                    control={control}
+                    name="contactAddress"
+                    label="Địa chỉ liên hệ"
+                    placeholder="Nhập địa chỉ liên hệ"
+                    rules={{ required: "Vui lòng nhập địa chỉ liên hệ" }}
                   />
                   <FormFileInput
                     control={control}
@@ -379,6 +420,22 @@ export function AdmissionPage() {
                     <div>
                       <span className="font-semibold">Địa chỉ: </span>
                       {watch("address")}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Ngày sinh: </span>
+                      {watch("dob") ? format(watch("dob"), "dd/MM/yyyy") : ""}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Giới tính: </span>
+                      {GENDER_OPTIONS.find((g) => g.value === watch("gender"))?.label}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Dân tộc: </span>
+                      {watch("ethnicity")}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Địa chỉ liên hệ: </span>
+                      {watch("contactAddress")}
                     </div>
                   </div>
                   <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg">
