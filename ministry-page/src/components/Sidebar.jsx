@@ -19,12 +19,17 @@ export function Sidebar({ collapsed = false }) {
       label: "Quản Lý Hồ Sơ",
       icon: FileText,
     },
+    {
+      path: "/programs",
+      label: "Quản Lý Đào Tạo",
+      icon: GraduationCap,
+    },
   ]
 
   return (
     <aside className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-white flex flex-col transition-all duration-300 z-40 ${
       collapsed ? 'w-20' : 'w-64'
-    }`}>
+      }`}>
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto p-4">
         <ul className="space-y-1">
@@ -39,7 +44,7 @@ export function Sidebar({ collapsed = false }) {
                     active
                       ? "bg-indigo-50 text-indigo-600"
                       : "text-gray-700 hover:bg-gray-50"
-                  }`}
+                    }`}
                   title={collapsed ? item.label : ''}
                 >
                   <Icon className={`h-5 w-5 flex-shrink-0 ${active ? 'text-indigo-600' : 'text-gray-500'}`} />
