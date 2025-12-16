@@ -10,9 +10,9 @@ import {
     FileText,
     GraduationCap,
     Calendar,
-    CheckCircle2,
+    Download,
+    Briefcase,
     Clock,
-    Download
 } from "lucide-react"
 
 // Reuse constants from AdmissionPage or move to a shared constants file
@@ -152,6 +152,16 @@ export function ApplicantProfilePage() {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
+                                            <label className="text-sm text-muted-foreground">Nơi sinh</label>
+                                            <p className="font-medium">{profile.placeOfBirth}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-sm text-muted-foreground">Nguyên quán</label>
+                                            <p className="font-medium">{profile.homeTown}</p>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
                                             <label className="text-sm text-muted-foreground">Dân tộc</label>
                                             <p className="font-medium">{profile.ethnicity}</p>
                                         </div>
@@ -185,6 +195,31 @@ export function ApplicantProfilePage() {
                                             <MapPin className="w-4 h-4 mr-2 text-muted-foreground" />
                                             <p className="font-medium">{profile.contactAddress}</p>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-background rounded-lg shadow-sm border overflow-hidden">
+                                <div className="bg-primary/5 p-6 border-b">
+                                    <h2 className="text-xl font-bold flex items-center">
+                                        <Briefcase className="w-5 h-5 mr-2 text-primary" />
+                                        Thông tin nghề nghiệp
+                                    </h2>
+                                </div>
+                                <div className="p-6 space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-sm text-muted-foreground">Nghề nghiệp</label>
+                                            <p className="font-medium text-lg">{profile.job}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-sm text-muted-foreground">Chức vụ</label>
+                                            <p className="font-medium text-lg">{profile.position}</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-sm text-muted-foreground">Đơn vị công tác</label>
+                                        <p className="font-medium text-lg">{profile.workplace}</p>
                                     </div>
                                 </div>
                             </div>
