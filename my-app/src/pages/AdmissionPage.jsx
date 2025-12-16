@@ -373,9 +373,9 @@ export function AdmissionPage() {
                   <FormInput
                     control={control}
                     name="address"
-                    label="Địa chỉ thường trú"
-                    placeholder="Nhập địa chỉ thường trú"
-                    rules={{ required: "Vui lòng nhập địa chỉ thường trú" }}
+                    label="Hộ khẩu thường trú"
+                    placeholder="Nhập hộ khẩu thường trú"
+                    rules={{ required: "Vui lòng nhập hộ khẩu thường trú" }}
                   />
                   <FormInput
                     control={control}

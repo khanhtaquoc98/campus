@@ -183,7 +183,7 @@ export function ApplicantProfilePage() {
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="text-sm text-muted-foreground">Địa chỉ thường trú</label>
+                                        <label className="text-sm text-muted-foreground">Hộ khẩu thường trú</label>
                                         <div className="flex items-center">
                                             <MapPin className="w-4 h-4 mr-2 text-muted-foreground" />
                                             <p className="font-medium">{profile.address}</p>
