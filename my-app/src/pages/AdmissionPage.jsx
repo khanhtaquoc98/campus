@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { format } from "date-fns"
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Layout } from "@/components/layout/Layout"
@@ -9,6 +10,7 @@ import {
   FormSelect,
   FormAutoComplete,
   FormFileInput,
+  FormDate,
 } from "@/components/form"
 import { CheckCircle2, Copy, ArrowRight, ArrowLeft, GraduationCap, Award, BookOpen } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -56,6 +58,12 @@ const MAJORS = {
   ],
 }
 
+const GENDER_OPTIONS = [
+  { value: "nam", label: "Nam" },
+  { value: "nu", label: "Nữ" },
+  { value: "khac", label: "Khác" },
+]
+
 export function AdmissionPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [profileUrl, setProfileUrl] = useState("")
@@ -72,6 +80,15 @@ export function AdmissionPage() {
       highSchoolTranscript: "",
       graduationCertificate: "",
       otp: "",
+      gender: "",
+      dob: null,
+      ethnicity: "",
+      contactAddress: "",
+      placeOfBirth: "",
+      homeTown: "",
+      job: "",
+      workplace: "",
+      position: "",
     },
   })
 
@@ -316,14 +333,83 @@ export function AdmissionPage() {
                         },
                       }}
                     />
+                    <FormDate
+                      control={control}
+                      name="dob"
+                      label="Ngày sinh"
+                      placeholder="Chọn ngày sinh"
+                      dateFormat="dd/MM/yyyy"
+                      rules={{ required: "Vui lòng chọn ngày sinh" }}
+                    />
+                    <FormSelect
+                      control={control}
+                      name="gender"
+                      label="Giới tính"
+                      options={GENDER_OPTIONS}
+                      rules={{ required: "Vui lòng chọn giới tính" }}
+                    />
+                    <FormInput
+                      control={control}
+                      name="placeOfBirth"
+                      label="Nơi sinh"
+                      placeholder="Nhập nơi sinh"
+                      rules={{ required: "Vui lòng nhập nơi sinh" }}
+                    />
+                    <FormInput
+                      control={control}
+                      name="homeTown"
+                      label="Nguyên quán"
+                      placeholder="Nhập nguyên quán"
+                      rules={{ required: "Vui lòng nhập nguyên quán" }}
+                    />
+                    <FormInput
+                      control={control}
+                      name="ethnicity"
+                      label="Dân tộc"
+                      placeholder="Nhập dân tộc"
+                      rules={{ required: "Vui lòng nhập dân tộc" }}
+                    />
                   </div>
                   <FormInput
                     control={control}
                     name="address"
-                    label="Địa chỉ"
-                    placeholder="Nhập địa chỉ"
-                    rules={{ required: "Vui lòng nhập địa chỉ" }}
+                    label="Hộ khẩu thường trú"
+                    placeholder="Nhập hộ khẩu thường trú"
+                    rules={{ required: "Vui lòng nhập hộ khẩu thường trú" }}
                   />
+                  <FormInput
+                    control={control}
+                    name="contactAddress"
+                    label="Địa chỉ liên hệ"
+                    placeholder="Nhập địa chỉ liên hệ"
+                    rules={{ required: "Vui lòng nhập địa chỉ liên hệ" }}
+                  />
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-semibold">Thông tin nghề nghiệp</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <FormInput
+                        control={control}
+                        name="job"
+                        label="Nghề nghiệp"
+                        placeholder="Nhập nghề nghiệp"
+                        rules={{ required: "Vui lòng nhập nghề nghiệp" }}
+                      />
+                      <FormInput
+                        control={control}
+                        name="workplace"
+                        label="Đơn vị công tác"
+                        placeholder="Nhập đơn vị công tác"
+                        rules={{ required: "Vui lòng nhập đơn vị công tác" }}
+                      />
+                      <FormInput
+                        control={control}
+                        name="position"
+                        label="Chức vụ"
+                        placeholder="Nhập chức vụ"
+                        rules={{ required: "Vui lòng nhập chức vụ" }}
+                      />
+                    </div>
+                  </div>
                   <FormFileInput
                     control={control}
                     name="highSchoolTranscript"
@@ -379,6 +465,42 @@ export function AdmissionPage() {
                     <div>
                       <span className="font-semibold">Địa chỉ: </span>
                       {watch("address")}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Ngày sinh: </span>
+                      {watch("dob") ? format(watch("dob"), "dd/MM/yyyy") : ""}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Giới tính: </span>
+                      {GENDER_OPTIONS.find((g) => g.value === watch("gender"))?.label}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Nơi sinh: </span>
+                      {watch("placeOfBirth")}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Nguyên quán: </span>
+                      {watch("homeTown")}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Dân tộc: </span>
+                      {watch("ethnicity")}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Địa chỉ liên hệ: </span>
+                      {watch("contactAddress")}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Nghề nghiệp: </span>
+                      {watch("job")}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Đơn vị công tác: </span>
+                      {watch("workplace")}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Chức vụ: </span>
+                      {watch("position")}
                     </div>
                   </div>
                   <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg">

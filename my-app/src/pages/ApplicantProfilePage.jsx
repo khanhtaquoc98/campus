@@ -10,9 +10,9 @@ import {
     FileText,
     GraduationCap,
     Calendar,
-    CheckCircle2,
+    Download,
+    Briefcase,
     Clock,
-    Download
 } from "lucide-react"
 
 // Reuse constants from AdmissionPage or move to a shared constants file
@@ -37,6 +37,12 @@ const MAJORS_MAPPING = {
     "kh-2": "Tiếng Anh giao tiếp",
     "kh-3": "Kỹ năng mềm",
     "kh-4": "Digital Marketing",
+}
+
+const GENDER_LABEL = {
+    "nam": "Nam",
+    "nu": "Nữ",
+    "khac": "Khác"
 }
 
 export function ApplicantProfilePage() {
@@ -131,6 +137,37 @@ export function ApplicantProfilePage() {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
+                                            <label className="text-sm text-muted-foreground">Ngày sinh</label>
+                                            <div className="flex items-center">
+                                                <Calendar className="w-4 h-4 mr-2 text-muted-foreground" />
+                                                <p className="font-medium">
+                                                    {profile.dob ? new Date(profile.dob).toLocaleDateString('vi-VN') : "N/A"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="text-sm text-muted-foreground">Giới tính</label>
+                                            <p className="font-medium">{GENDER_LABEL[profile.gender] || profile.gender}</p>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-sm text-muted-foreground">Nơi sinh</label>
+                                            <p className="font-medium">{profile.placeOfBirth}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-sm text-muted-foreground">Nguyên quán</label>
+                                            <p className="font-medium">{profile.homeTown}</p>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-sm text-muted-foreground">Dân tộc</label>
+                                            <p className="font-medium">{profile.ethnicity}</p>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
                                             <label className="text-sm text-muted-foreground">Số điện thoại</label>
                                             <div className="flex items-center">
                                                 <Phone className="w-4 h-4 mr-2 text-muted-foreground" />
@@ -146,11 +183,43 @@ export function ApplicantProfilePage() {
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="text-sm text-muted-foreground">Địa chỉ</label>
+                                        <label className="text-sm text-muted-foreground">Hộ khẩu thường trú</label>
                                         <div className="flex items-center">
                                             <MapPin className="w-4 h-4 mr-2 text-muted-foreground" />
                                             <p className="font-medium">{profile.address}</p>
                                         </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-sm text-muted-foreground">Địa chỉ liên hệ</label>
+                                        <div className="flex items-center">
+                                            <MapPin className="w-4 h-4 mr-2 text-muted-foreground" />
+                                            <p className="font-medium">{profile.contactAddress}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-background rounded-lg shadow-sm border overflow-hidden">
+                                <div className="bg-primary/5 p-6 border-b">
+                                    <h2 className="text-xl font-bold flex items-center">
+                                        <Briefcase className="w-5 h-5 mr-2 text-primary" />
+                                        Thông tin nghề nghiệp
+                                    </h2>
+                                </div>
+                                <div className="p-6 space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-sm text-muted-foreground">Nghề nghiệp</label>
+                                            <p className="font-medium text-lg">{profile.job}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-sm text-muted-foreground">Chức vụ</label>
+                                            <p className="font-medium text-lg">{profile.position}</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-sm text-muted-foreground">Đơn vị công tác</label>
+                                        <p className="font-medium text-lg">{profile.workplace}</p>
                                     </div>
                                 </div>
                             </div>
