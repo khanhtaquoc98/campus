@@ -1,0 +1,15 @@
+{
+  "name": "he-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "lint": "npm run lint --workspaces",
+    "lint:fix": "npm run lint:fix --workspaces"
+  },
+  "workspaces": [
+    "admin-app",
+    "my-app",
+    "ministry-page"
+  ]
+}
