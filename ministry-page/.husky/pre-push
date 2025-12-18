@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Get the branch name being pushed
+protected_branch='main'
+
+# Get the current branch name
+current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+
+# Check if trying to push to protected branch
+if [ "$protected_branch" = "$current_branch" ]; then
+  echo "❌ You cannot push directly to the '$protected_branch' branch."
+  echo "Please create a pull request instead."
+  exit 1
+fi
+
+# Also check if trying to push main/master from any branch
+while read local_ref local_sha remote_ref remote_sha
+do
+  if [ "$remote_ref" = "refs/heads/main" ] || [ "$remote_ref" = "refs/heads/master" ]; then
+    echo "❌ You cannot push to '$remote_ref' branch."
+    echo "Please create a pull request instead."
+    exit 1
+  fi
+done
+
+exit 0
+

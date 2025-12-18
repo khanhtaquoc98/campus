@@ -1,0 +1,209 @@
+# Coding Standards và Best Practices
+
+## 1. Component Usage
+
+### Sử dụng Component Chung
+- **LUÔN** sử dụng các component từ `@/components/ui/*` và `@/components/form/*` trước khi tự viết component mới
+- Nếu component cần thiết không tồn tại, hãy tạo component common trong `@/components/common/*` để tái sử dụng
+- Không duplicate code - luôn kiểm tra xem đã có component tương tự chưa
+
+### Component Structure
+```jsx
+// ✅ Good: Sử dụng component từ ui
+import { Button, Input, Card } from '@/components/ui'
+import { FormInput, FormSelect } from '@/components/form'
+
+// ❌ Bad: Tự viết lại component đã có
+const MyButton = ({ children }) => <button>{children}</button>
+```
+
+## 2. Form Management
+
+### React Hook Form
+- **BẮT BUỘC** sử dụng `react-hook-form` cho tất cả các form
+- Sử dụng các Form components từ `@/components/form/*` (FormInput, FormSelect, FormDate, etc.)
+- Luôn validate form với `react-hook-form` validation rules
+
+```jsx
+// ✅ Good
+import { useForm } from 'react-hook-form'
+import { FormInput, FormSelect } from '@/components/form'
+
+const MyForm = () => {
+  const { control, handleSubmit } = useForm()
+  
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <FormInput
+        control={control}
+        name="email"
+        label="Email"
+        rules={{ required: 'Email is required' }}
+      />
+    </form>
+  )
+}
+
+// ❌ Bad: Sử dụng controlled component thủ công
+const [email, setEmail] = useState('')
+<input value={email} onChange={(e) => setEmail(e.target.value)} />
+```
+
+## 3. API Calls với Redux Toolkit (RTK)
+
+### RTK Query cho API Calls
+- **BẮT BUỘC** sử dụng RTK Query (RTK Toolkit) cho tất cả API calls
+- Định nghĩa API endpoints trong `@/store/api/*`
+- Sử dụng `baseApi` từ `@/store/api/baseApi` để extend
+
+```jsx
+// ✅ Good: Sử dụng RTK Query
+import { useGetUsersQuery, useCreateUserMutation } from '@/store/api/adminApi'
+
+const UsersPage = () => {
+  const { data, isLoading, error } = useGetUsersQuery()
+  const [createUser] = useCreateUserMutation()
+  
+  // ...
+}
+
+// ❌ Bad: Sử dụng fetch/axios trực tiếp trong component
+const fetchUsers = async () => {
+  const response = await fetch('/api/users')
+  // ...
+}
+```
+
+### API Structure
+```jsx
+// ✅ Good: Định nghĩa trong store/api/adminApi.js
+import { baseApi } from './baseApi'
+
+export const adminApi = baseApi.injectEndpoints({
+  endpoints: (builder) => ({
+    getUsers: builder.query({
+      query: () => '/users',
+    }),
+  }),
+})
+```
+
+## 4. Constants và Magic Values
+
+### Định nghĩa Constants
+- **KHUYẾN KHÍCH** định nghĩa constants cho các giá trị so sánh, status, enums
+- Tạo file constants trong `@/constants/*` hoặc trong cùng file nếu chỉ dùng local
+- Không hardcode magic strings/numbers trong code
+
+```jsx
+// ✅ Good: Sử dụng constants
+// constants/status.js
+export const USER_STATUS = {
+  ACTIVE: 'active',
+  INACTIVE: 'inactive',
+  PENDING: 'pending',
+}
+
+// Component
+import { USER_STATUS } from '@/constants/status'
+
+if (user.status === USER_STATUS.ACTIVE) {
+  // ...
+}
+
+// ❌ Bad: Hardcode magic strings
+if (user.status === 'active') {
+  // ...
+}
+```
+
+### Constants cho API
+```jsx
+// ✅ Good
+export const API_ENDPOINTS = {
+  USERS: '/users',
+  APPLICATIONS: '/applications',
+  ACADEMIC_RECORDS: '/academic/records',
+}
+
+export const QUERY_KEYS = {
+  USERS: 'users',
+  USER_DETAIL: 'userDetail',
+}
+```
+
+## 5. Code Style
+
+### Naming Conventions
+- Components: PascalCase (`UserProfile.jsx`)
+- Functions/Variables: camelCase (`getUserData`, `isLoading`)
+- Constants: UPPER_SNAKE_CASE (`USER_STATUS`, `API_ENDPOINTS`)
+- Files: Match component/function name
+
+### File Organization
+```
+src/
+  components/
+    ui/          # Shadcn UI components
+    form/        # Form components với react-hook-form
+    common/      # Common reusable components
+    layout/      # Layout components
+  pages/         # Page components
+  store/
+    api/        # RTK Query API definitions
+    slices/     # Redux slices
+  constants/    # Constants và enums
+  config/       # Configuration files (routes, etc.)
+  utils/        # Utility functions
+  lib/          # Library utilities
+```
+
+## 6. Route Protection
+
+### Public và Private Routes
+- Routes có `isPublic: true` không cần authentication
+- Routes không có `isPublic` hoặc `isPublic: false` cần token để truy cập
+- Nếu không có token, redirect về `/errors/401` (Unauthorized)
+
+```jsx
+// ✅ Good: Route config
+{
+  path: '/profile',
+  component: ProfilePage,
+  isPublic: false, // Cần token
+}
+
+{
+  path: '/login',
+  component: LoginPage,
+  isPublic: true, // Không cần token
+}
+```
+
+## 7. Best Practices
+
+### Performance
+- Sử dụng `React.memo` cho components không cần re-render thường xuyên
+- Sử dụng `useMemo` và `useCallback` khi cần thiết
+- Tránh re-render không cần thiết
+
+### Error Handling
+- Luôn handle errors trong API calls
+- Sử dụng error states từ RTK Query
+- Hiển thị user-friendly error messages
+
+### Type Safety
+- Sử dụng JSDoc comments cho function parameters và return types
+- Định nghĩa PropTypes hoặc TypeScript types nếu có
+
+## 8. Checklist trước khi commit
+
+- [ ] Đã sử dụng component chung từ `@/components/ui` hoặc `@/components/form`
+- [ ] Form sử dụng `react-hook-form` với Form components
+- [ ] API calls sử dụng RTK Query từ `@/store/api/*`
+- [ ] Magic values đã được định nghĩa thành constants
+- [ ] Code đã pass ESLint check
+- [ ] Không có console.log (trừ console.error/warn khi cần)
+- [ ] Đã handle errors properly
+- [ ] Routes đã được đánh dấu public/private đúng cách
+

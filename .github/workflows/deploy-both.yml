@@ -1,0 +1,134 @@
+name: Deploy Both Apps to AWS VPS
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+env:
+  ADMIN_APP_IMAGE: admin-app
+  MY_APP_IMAGE: my-app
+  ADMIN_CONTAINER: admin-app
+  MY_CONTAINER: my-app
+
+jobs:
+  deploy-admin-app:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, '[deploy-admin]') || contains(github.event.head_commit.modified, 'admin-app') || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Admin App Docker image
+        working-directory: ./admin-app
+        run: |
+          docker build -t ${{ env.ADMIN_APP_IMAGE }}:${{ github.sha }} .
+          docker tag ${{ env.ADMIN_APP_IMAGE }}:${{ github.sha }} ${{ env.ADMIN_APP_IMAGE }}:latest
+
+      - name: Save Admin App Docker image
+        run: |
+          docker save ${{ env.ADMIN_APP_IMAGE }}:latest | gzip > ${{ env.ADMIN_APP_IMAGE }}.tar.gz
+
+      - name: Deploy Admin App to AWS VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.AWS_VPS_HOST }}
+          username: ${{ secrets.AWS_VPS_USER }}
+          key: ${{ secrets.AWS_VPS_SSH_KEY }}
+          port: ${{ secrets.AWS_VPS_PORT || 22 }}
+          source: "${{ env.ADMIN_APP_IMAGE }}.tar.gz"
+          target: "/tmp/"
+
+      - name: Load and deploy Admin App on VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.AWS_VPS_HOST }}
+          username: ${{ secrets.AWS_VPS_USER }}
+          key: ${{ secrets.AWS_VPS_SSH_KEY }}
+          port: ${{ secrets.AWS_VPS_PORT || 22 }}
+          script: |
+            # Create Docker network if not exists
+            docker network create app-network || true
+            
+            docker load < /tmp/${{ env.ADMIN_APP_IMAGE }}.tar.gz
+            docker stop ${{ env.ADMIN_CONTAINER }} || true
+            docker rm ${{ env.ADMIN_CONTAINER }} || true
+            docker run -d \
+              --name ${{ env.ADMIN_CONTAINER }} \
+              --restart unless-stopped \
+              -p 4001:80 \
+              --network app-network \
+              ${{ env.ADMIN_APP_IMAGE }}:latest
+            docker image prune -f
+            rm -f /tmp/${{ env.ADMIN_APP_IMAGE }}.tar.gz
+
+      - name: Clean up Admin App files
+        if: always()
+        run: |
+          rm -f ${{ env.ADMIN_APP_IMAGE }}.tar.gz
+
+  deploy-my-app:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, '[deploy-my-app]') || contains(github.event.head_commit.modified, 'my-app') || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build My App Docker image
+        working-directory: ./my-app
+        run: |
+          docker build -t ${{ env.MY_APP_IMAGE }}:${{ github.sha }} .
+          docker tag ${{ env.MY_APP_IMAGE }}:${{ github.sha }} ${{ env.MY_APP_IMAGE }}:latest
+
+      - name: Save My App Docker image
+        run: |
+          docker save ${{ env.MY_APP_IMAGE }}:latest | gzip > ${{ env.MY_APP_IMAGE }}.tar.gz
+
+      - name: Deploy My App to AWS VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.AWS_VPS_HOST }}
+          username: ${{ secrets.AWS_VPS_USER }}
+          key: ${{ secrets.AWS_VPS_SSH_KEY }}
+          port: ${{ secrets.AWS_VPS_PORT || 22 }}
+          source: "${{ env.MY_APP_IMAGE }}.tar.gz"
+          target: "/tmp/"
+
+      - name: Load and deploy My App on VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.AWS_VPS_HOST }}
+          username: ${{ secrets.AWS_VPS_USER }}
+          key: ${{ secrets.AWS_VPS_SSH_KEY }}
+          port: ${{ secrets.AWS_VPS_PORT || 22 }}
+          script: |
+            # Create Docker network if not exists
+            docker network create app-network || true
+            
+            docker load < /tmp/${{ env.MY_APP_IMAGE }}.tar.gz
+            docker stop ${{ env.MY_CONTAINER }} || true
+            docker rm ${{ env.MY_CONTAINER }} || true
+            docker run -d \
+              --name ${{ env.MY_CONTAINER }} \
+              --restart unless-stopped \
+              -p 4000:80 \
+              --network app-network \
+              ${{ env.MY_APP_IMAGE }}:latest
+            docker image prune -f
+            rm -f /tmp/${{ env.MY_APP_IMAGE }}.tar.gz
+
+      - name: Clean up My App files
+        if: always()
+        run: |
+          rm -f ${{ env.MY_APP_IMAGE }}.tar.gz
+
